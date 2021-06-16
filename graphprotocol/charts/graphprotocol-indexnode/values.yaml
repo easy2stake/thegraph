@@ -1,0 +1,106 @@
+# Default values for graphprotocol-indexnode.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: graphprotocol/graph-node
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "v0.22.0"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "index-node"
+
+secrets:
+  postgres: postgresindexnode
+
+config:
+  BLOCK_INGESTOR: index-node-0
+  GRAPH_KILL_IF_UNRESPONSIVE: "true"
+  node_role: index-node
+  ipfs: https://ipfs.testnet.thegraph.com
+  ethereum: >-
+    mainnet:http://mainnet-archive-geth-node-url.com
+  RUST_LOG: ERROR
+  GRAPH_LOG: INFO
+  STORE_CONNECTION_POOL_SIZE: "25"
+  ETHEREUM_TRACE_STREAM_STEP_SIZE: "50"
+  ETHEREUM_BLOCK_BATCH_SIZE: "10"
+  ETHEREUM_RPC_MAX_PARALLEL_REQUESTS: "64"
+  GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE: "500"
+  GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE: "200"
+  GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH: "true"
+  EXPERIMENTAL_SUBGRAPH_VERSION_SWITCHING_MODE: synced
+
+postgresql:
+  password: "P%40SsPsQL965%23r00t"  # This is a rust limitation, special characters needs to be encoded using any URL Encode/Decode solution
+  host: thegraph-psql-server.postgres.database.azure.com
+  user: "graphpsql%40thegraph-psql-server"
+  dbname: graph
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: "/metrics"
+  prometheus.io/port: "8040"
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+container:
+  ports:
+    http: 8000 # GraphQL RPC
+    ws: 8001 # GraphQL WebSockets
+    jsonRpc: 8020 # JSON RPC
+    indexNode: 8030 # Subgraph indexing status
+    metrics: 8040 # Prometheus metrics
+
+service:
+  type: ClusterIP
+  http: 8000 # GraphQL RPC
+  ws: 8001 # GraphQL WebSockets
+  jsonRpc: 8020 # JSON RPC
+  indexNode: 8030 # Subgraph indexing status
+  metrics: 8040 # Prometheus metrics
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []

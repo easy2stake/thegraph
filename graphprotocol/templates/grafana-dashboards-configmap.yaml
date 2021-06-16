@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-graph-indexing-status-configmap
+  labels:
+    grafana_dashboard: "1"
+data: 
+  indexing-status.json: |-
+{{.Files.Get "grafana-custom/dashboards/indexing-status.json" | indent 4}}
+  individual-subgraph-metrics.json: |-
+{{.Files.Get "grafana-custom/dashboards/individual-subgraph-metrics.json" | indent 4}}
+  postgres-status.json: |-
+{{.Files.Get "grafana-custom/dashboards/postgres-status.json" | indent 4}}
+  service-performance.json: |-
+{{.Files.Get "grafana-custom/dashboards/service-performance.json" | indent 4}}
+  sync-rate.json: |-
+{{.Files.Get "grafana-custom/dashboards/sync-rate.json" | indent 4}}
+
+
+

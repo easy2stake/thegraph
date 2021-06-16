@@ -1,0 +1,41 @@
+apiVersion: v2
+appVersion: 0.1.0
+dependencies:
+- condition: graphprotocol-agent.enabled
+  name: graphprotocol-agent
+  version: 0.1.0
+- condition: graphprotocol-indexnode.enabled
+  name: graphprotocol-indexnode
+  version: 0.1.0
+- condition: graphprotocol-querynode.enabled
+  name: graphprotocol-querynode
+  version: 0.1.0
+- condition: graphprotocol-service.enabled
+  name: graphprotocol-service
+  version: 0.1.0
+- name: prometheus
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 14.1.0
+  condition: prometheus.enabled
+  alias: prometheus
+- name: grafana
+  repository: https://grafana.github.io/helm-charts
+  version: 6.9.1
+  condition: grafana.enabled
+  alias: grafana
+
+name: graphprotocol
+description: Helm unbrella chart for Graph Protocol subcharts
+home: https://thegraph.com/
+icon: https://storage.googleapis.com/graph-web/favicon.png
+keywords:
+- graphprotocol
+- ethereum
+maintainers:
+- email: office@easy2stake.com
+  name: Alexandru Nicu
+name: graphprotocol-agent
+sources:
+- https://github.com/
+type: application
+version: 0.1.0

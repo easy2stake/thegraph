@@ -1,0 +1,21 @@
+dependencies:
+- name: graphprotocol-agent
+  repository: ""
+  version: 0.1.0
+- name: graphprotocol-indexnode
+  repository: ""
+  version: 0.1.0
+- name: graphprotocol-querynode
+  repository: ""
+  version: 0.1.0
+- name: graphprotocol-service
+  repository: ""
+  version: 0.1.0
+- name: prometheus
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 14.1.0
+- name: grafana
+  repository: https://grafana.github.io/helm-charts
+  version: 6.9.1
+digest: sha256:e5fa6a767c2ffbdd8057ae593c917970feeb69dbb9b298575a32ed055238f081
+generated: "2021-06-09T16:13:45.568628+03:00"

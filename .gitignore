@@ -1,0 +1,11 @@
+# Ignore terraform files and folders
+**/.terraform/*
+tf.plan
+terraform.tfstate
+
+# Ignore Mac system files
+.DS_store
+
+# Ignore files related to API keys
+.env
+*.e2s

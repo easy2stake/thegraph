@@ -1,0 +1,108 @@
+# Default values for graphprotocol-agent.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/graphprotocol/indexer-agent
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: v0.15.1
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "indexer-agent"
+
+secrets:
+  postgres: postgresagent
+  mnemonic: ethereumaccounts
+
+config:
+  INDEXER_AGENT_INDEXER_ADDRESS: 0x0000000000000000000000000000000000000000 # Change this by needs
+  INDEXER_AGENT_INDEX_NODE_IDS: "index-node-0,index_node_1"
+  INDEXER_AGENT_INJECT_DAI: "true" # Change this by needs
+  INDEXER_AGENT_ETHEREUM: https://eth-rinkeby-rpc.domain.com # Change this by needs
+  INDEXER_AGENT_ETHEREUM_NETWORK: rinkeby # Change this by needs
+  INDEXER_AGENT_GRAPH_NODE_QUERY_ENDPOINT: http://query-node-proxy/
+  INDEXER_AGENT_GRAPH_NODE_STATUS_ENDPOINT: http://query-node-proxy/index-node/graphql
+  INDEXER_AGENT_GRAPH_NODE_ADMIN_ENDPOINT: http://index-node/
+  INDEXER_AGENT_PUBLIC_INDEXER_URL: http://service.thegraphtest.com  # Change this by needs
+  INDEXER_AGENT_INDEXER_GEO_COORDINATES: "51.476852 -0.000500" #Royal Observatory Greenwich, London, UK
+  INDEXER_AGENT_NETWORK_SUBGRAPH_ENDPOINT: https://gateway.testnet.thegraph.com/network # Change this by needs
+  #INDEXER_AGENT_NETWORK_SUBGRAPH_DEPLOYMENT: QmUBRDENCjFt57vVjFc3D4EQoYqXJffKiyFyuGYB2BN8Wi
+  INDEXER_AGENT_DAI_CONTRACT: 0x9e7e607afd22906f7da6f1ec8f432d6f244278be
+  INDEXER_AGENT_COLLECT_RECEIPTS_ENDPOINT: https://gateway.testnet.thegraph.com/collect-receipts
+  #INDEXER_AGENT_VECTOR_NODE: "http://vector-node"
+  #INDEXER_AGENT_VECTOR_EVENT_SERVER: "http://index-node:8001/"
+  #INDEXER_AGENT_VECTOR_EVENT_SERVER_PORT: "8001"
+  #INDEXER_AGENT_VECTOR_ROUTER: vector8BSZxfkr62As6KZX2so4yXuex5XcpPXQ2tYZrBqpub94dAobu7
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: "/metrics"
+  prometheus.io/port: "7300"
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+container:
+  ports:
+    http: 8000
+    metrics: 7300
+    vectorevents: 8001
+
+service:
+  type: ClusterIP
+  http: 8000
+  metrics: 7300
+  vectorevents: 8001
+
+ingress:
+  enabled: false
+
+postgresql:
+  password: P@SsPsQL965#r00t
+  host: thegraph-psql-server.postgres.database.azure.com
+  user: graphpsql@thegraph-psql-server
+  dbname: indexer-service
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []

@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ethereumaccounts
+type: Opaque
+stringData:
+  mnemonic: {{ .Values.mnemonic }}
+

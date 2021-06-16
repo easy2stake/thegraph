@@ -1,0 +1,16 @@
+apiVersion: v2
+appVersion: latest
+description: Graph Protocol Service
+home: https://thegraph.com/
+icon: https://storage.googleapis.com/graph-web/favicon.png
+keywords:
+- graphprotocol
+- ethereum
+maintainers:
+- email: office@easy2stake.com
+  name: Alexandru Nicu
+name: graphprotocol-service
+sources:
+- https://github.com/
+type: application
+version: 0.1.0

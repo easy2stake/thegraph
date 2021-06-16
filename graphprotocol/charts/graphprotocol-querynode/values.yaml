@@ -1,0 +1,106 @@
+# Default values for graphprotocol-querynode.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+image:
+  repository: graphprotocol/graph-node
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "v0.22.0"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "query-node"
+
+secrets:
+  postgres: postgresquerynode
+
+config:
+  BLOCK_INGESTOR: index-node-0
+  GRAPH_KILL_IF_UNRESPONSIVE: "true"
+  node_role: query-node
+  ipfs: https://ipfs.network.thegraph.com
+  ethereum: >-
+    mainnet:http://mainnet-archive-geth-node-url.com
+  RUST_LOG: INFO
+  STORE_CONNECTION_POOL_SIZE: "25"
+  GRAPH_LOG_QUERY_TIMING: gql
+  EXPERIMENTAL_SUBGRAPH_VERSION_SWITCHING_MODE: synced
+  GRAPH_KILL_IF_UNRESPONSIVE: "true"
+
+postgresql:
+  password: "P%40SsPsQL965%23r00t"
+  host: "thegraph-psql-server.postgres.database.azure.com"
+  user: "graphpsql%40thegraph-psql-server"
+  dbname: graph
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: "/metrics"
+  prometheus.io/port: "8040"
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+container:
+  ports:
+    nginx: 80
+    http: 8000
+    ws: 8001
+    jsonRpc: 8020
+    indexNode: 8030
+    metrics: 8040
+
+service:
+  type: ClusterIP
+  http: 8000 # GraphQL RPC
+  ws: 8001 # GraphQL WebSockets
+  jsonRpc: 8020 # JSON RPC
+  indexNode: 8030 # Subgraph indexing status
+  metrics: 8040 # Prometheus metrics
+
+proxyService:
+  type: ClusterIP
+  nginx: 80
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []

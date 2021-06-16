@@ -1,0 +1,112 @@
+# Default values for graphprotocol-service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ghcr.io/graphprotocol/indexer-service
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: v0.15.1
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "indexer-service"
+
+secrets:
+  postgres: postgresservice
+  mnemonic: ethereumaccounts
+
+config:
+  INDEXER_SERVICE_INDEXER_ADDRESS: 0x0000000000000000000000000000000000000000 # Change this by needs
+  INDEXER_SERVICE_PORT: "7600"
+  INDEXER_SERVICE_ETHEREUM_NETWORK: rinkeby # Change this by needs
+  INDEXER_SERVICE_ETHEREUM: https://eth-rinkeby-rpc.domain.com # Change this by needs
+  INDEXER_SERVICE_GRAPH_NODE_QUERY_ENDPOINT: http://query-node-proxy/
+  INDEXER_SERVICE_GRAPH_NODE_STATUS_ENDPOINT: http://query-node-proxy/index-node/graphql
+  # Next varaible must be changed with http://indexer-agent:8002/network
+  INDEXER_SERVICE_NETWORK_SUBGRAPH_ENDPOINT: https://gateway.testnet.thegraph.com/network
+  #INDEXER_SERVICE_VECTOR_NODE: "http://vector-node"
+  #INDEXER_SERVICE_VECTOR_ROUTER: vector8BSZxfkr62As6KZX2so4yXuex5XcpPXQ2tYZrBqpub94dAobu7
+  SKIP_EVM_VALIDATION: "true"
+  INDEXER_SERVICE_CLIENT_SIGNER_ADDRESS: 0xe1EC4339019eC9628438F8755f847e3023e4ff9c
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: "/metrics"
+  prometheus.io/port: "7300"
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+container:
+  ports:
+    http: 7600
+    metrics: 7300
+
+service:
+  type: ClusterIP
+  http: 7600
+  metrics: 7300
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: service.thegraphtest.easy2stake.com
+      paths:
+       - path: /
+         servicePort: 7600
+         serviceName: graphprotocol-service
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+postgresql:
+  password: P@SsPsQL965#r00t
+  host: thegraph-psql-server.postgres.database.azure.com
+  user: graphpsql@thegraph-psql-server
+  dbname: indexer-service
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []

@@ -1,0 +1,462 @@
+###########################  ADD THE INDEXER MNEMONIC HERE ###########################
+mnemonic: your mnemonic here
+######################################################################################
+
+
+##################################################
+### START of graphprotocol-agent configuration ###
+##################################################
+
+graphprotocol-agent:
+  replicaCount: 1
+
+# indexer-agent image information
+  image:
+    repository: ghcr.io/graphprotocol/indexer-agent
+    pullPolicy: IfNotPresent
+    tag: v0.15.1 # The image version. Change this when you need to upgrade/downgrade
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: "indexer-agent"
+
+  secrets:
+    postgres: postgresagent
+    mnemonic: ethereumaccounts
+
+# The env variables needed by the graph-protocol agent.
+# New variables can be added if it's needed.
+  config:
+    INDEXER_AGENT_INDEXER_ADDRESS: 0x0000000000000000000000000000000000000000
+    INDEXER_AGENT_INDEX_NODE_IDS: "index_node_0"
+    INDEXER_AGENT_INJECT_DAI: "true"
+    INDEXER_AGENT_ETHEREUM: https://eth-rinkeby-rpc.domain.com # Change this by needs
+    INDEXER_AGENT_ETHEREUM_NETWORK: rinkeby # Change this by needs
+    INDEXER_AGENT_GRAPH_NODE_QUERY_ENDPOINT: http://query-node-proxy/
+    INDEXER_AGENT_GRAPH_NODE_STATUS_ENDPOINT: http://index-node:8030/graphql
+    INDEXER_AGENT_GRAPH_NODE_ADMIN_ENDPOINT: http://index-node:8020/
+    INDEXER_AGENT_PUBLIC_INDEXER_URL: http://service.thegraphtest.easy2stake.com # Change this by needs
+    INDEXER_AGENT_INDEXER_GEO_COORDINATES: "51.476852 -0.000500" #Royal Observatory Greenwich, London, UK
+    INDEXER_AGENT_NETWORK_SUBGRAPH_ENDPOINT: https://gateway.testnet.thegraph.com/network
+    # INDEXER_AGENT_NETWORK_SUBGRAPH_DEPLOYMENT: QmUBRDENCjFt57vVjFc3D4EQoYqXJffKiyFyuGYB2BN8Wi
+    INDEXER_AGENT_DAI_CONTRACT: 0x9e7e607afd22906f7da6f1ec8f432d6f244278be
+    INDEXER_AGENT_COLLECT_RECEIPTS_ENDPOINT: https://gateway.testnet.thegraph.com/collect-receipts
+    # INDEXER_AGENT_VECTOR_NODE: "http://vector-node"
+    # INDEXER_AGENT_VECTOR_EVENT_SERVER: "http://index-node:8001/"
+    # INDEXER_AGENT_VECTOR_EVENT_SERVER_PORT: "8001"
+    # INDEXER_AGENT_VECTOR_ROUTER: vector8BSZxfkr62As6KZX2so4yXuex5XcpPXQ2tYZrBqpub94dAobu7
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "7300"
+
+  container:
+    ports:
+      http: 8000
+      metrics: 7300
+      vectorevents: 8001
+
+  service:
+    type: ClusterIP
+    http: 8000
+    metrics: 7300
+    vectorevents: 8001
+
+  prometheus: false
+
+# The ingress enables internet access to this service. Use the whitelist to control the access.
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0" # Comma separated list of network that are allowed to access this service. 0.0.0.0/0 means ANY
+    hosts:
+      - host: agent.thegraphtest.easy2stake.com # Change this hostname with your own domain
+        paths:
+          - path: /
+            serviceName: indexer-agent
+            servicePort: 8000
+
+# These are the PSQL connection settings. Must match the data defined inside azure-terraform\terraform.tfvars PSQL section.
+  postgresql:
+    password: P@SsPsQL965#r00t
+    host: graph-psql-server.postgres.database.azure.com
+    user: graphpsql@graph-psql-server
+    dbname: indexer-service
+
+  resources: {}
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+##################################################
+#### END of graphprotocol-agent configuration ####
+##################################################
+
+######################################################
+### START of graphprotocol-indexnode configuration ###
+######################################################
+graphprotocol-indexnode:
+  replicaCount: 1
+
+# graph-node image information
+  image:
+    repository: graphprotocol/graph-node
+    pullPolicy: IfNotPresent
+    tag: "v0.22.0" # The image version. Change this when you need to upgrade/downgrade
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: "index-node"
+
+  secrets:
+    postgres: postgresindexnode
+
+
+# The env variables needed by the index-node.
+# New variables can be added if it's needed.
+  config:
+    BLOCK_INGESTOR: index-node-0
+    GRAPH_KILL_IF_UNRESPONSIVE: "true"
+    node_role: index-node
+    ipfs: https://ipfs.testnet.thegraph.com
+    ethereum: >-
+      mainnet:http://mainnet-archive-geth-node-url.com
+    RUST_LOG: ERROR
+    GRAPH_LOG: INFO
+    STORE_CONNECTION_POOL_SIZE: "25"
+    ETHEREUM_TRACE_STREAM_STEP_SIZE: "50"
+    ETHEREUM_BLOCK_BATCH_SIZE: "10"
+    ETHEREUM_RPC_MAX_PARALLEL_REQUESTS: "64"
+    GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE: "500"
+    GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE: "200"
+    GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH: "true"
+    EXPERIMENTAL_SUBGRAPH_VERSION_SWITCHING_MODE: synced
+
+# These are the PSQL connection settings. Must match the data defined inside azure-terraform\terraform.tfvars PSQL section.
+  postgresql:
+    password: "P%40SsPsQL965%23r00t" # This is a rust limitation, special characters needs to be encoded using any URL Encode/Decode solution
+    host: graph-psql-server.postgres.database.azure.com
+    user: "graphpsql%40graph-psql-server" # This is a rust limitation, special characters needs to be encoded using any URL Encode/Decode solution
+    dbname: graph
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "8040"
+
+  podSecurityContext: {}
+
+  securityContext: {}
+
+  container:
+    ports:
+      http: 8000 # GraphQL RPC
+      ws: 8001 # GraphQL WebSockets
+      jsonRpc: 8020 # JSON RPC
+      indexNode: 8030 # Subgraph indexing status
+      metrics: 8040 # Prometheus metrics
+
+  service:
+    type: ClusterIP
+    http: 8000 # GraphQL RPC
+    ws: 8001 # GraphQL WebSockets
+    jsonRpc: 8020 # JSON RPC
+    indexNode: 8030 # Subgraph indexing status
+    metrics: 8040 # Prometheus metrics
+
+  prometheus: false
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+######################################################
+#### END of graphprotocol-indexnode configuration ####
+######################################################
+
+######################################################
+### START of graphprotocol-querynode configuration ###
+######################################################
+graphprotocol-querynode:
+
+  replicaCount: 2
+
+# query-node image information
+  image:
+    repository: graphprotocol/graph-node
+    pullPolicy: IfNotPresent
+    tag: "v0.22.0" # The image version. Change this when you need to upgrade/downgrade
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: "query-node"
+
+  secrets:
+    postgres: postgresquerynode
+
+# The env variables needed by the query-node.
+# New variables can be added if it's needed.
+  config:
+    BLOCK_INGESTOR: index-node-0
+    GRAPH_KILL_IF_UNRESPONSIVE: "true"
+    node_role: query-node
+    ipfs: https://ipfs.network.thegraph.com
+    ethereum: >-
+      mainnet:http://mainnet-archive-geth-node-url.com
+    RUST_LOG: INFO
+    STORE_CONNECTION_POOL_SIZE: "25"
+    GRAPH_LOG_QUERY_TIMING: gql
+    EXPERIMENTAL_SUBGRAPH_VERSION_SWITCHING_MODE: synced
+    GRAPH_KILL_IF_UNRESPONSIVE: "true"
+
+# These are the PSQL connection settings. Must match the data defined inside azure-terraform\terraform.tfvars PSQL section.
+  postgresql:
+    password: "P%40SsPsQL965%23r00t"
+    host: graph-psql-server.postgres.database.azure.com
+    user: "graphpsql%40graph-psql-server"
+    dbname: graph
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "8040"
+
+  podSecurityContext: {}
+
+  securityContext: {}
+
+  container:
+    ports:
+      nginx: 80
+      http: 8000
+      ws: 8001
+      jsonRpc: 8020
+      indexNode: 8030
+      metrics: 8040
+
+  service:
+    type: ClusterIP
+    http: 8000 # GraphQL RPC
+    ws: 8001 # GraphQL WebSockets
+    jsonRpc: 8020 # JSON RPC
+    indexNode: 8030 # Subgraph indexing status
+    metrics: 8040 # Prometheus metrics
+
+  proxyService:
+    type: ClusterIP
+    nginx: 80
+
+  prometheus: true
+
+  resources: {}
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+######################################################
+#### END of graphprotocol-querynode configuration ####
+######################################################
+
+######################################################
+#### START of graphprotocol-service configuration ####
+######################################################
+graphprotocol-service:
+
+  replicaCount: 1
+
+# indexer-service image information
+  image:
+    repository: ghcr.io/graphprotocol/indexer-service
+    pullPolicy: IfNotPresent
+    tag: v0.15.1 # The image version. Change this when you need to upgrade/downgrade
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: "indexer-service"
+
+  secrets:
+    postgres: postgresservice
+    mnemonic: ethereumaccounts
+
+# The env variables needed by the graph-protocol service.
+# New variables can be added if it's needed.
+  config:
+    INDEXER_SERVICE_INDEXER_ADDRESS: 0x0000000000000000000000000000000000000000
+    INDEXER_SERVICE_PORT: "7600"
+    INDEXER_SERVICE_ETHEREUM_NETWORK: rinkeby
+    INDEXER_SERVICE_ETHEREUM: https://eth-rinkeby-rpc.domain.com # Change this by needs
+    INDEXER_SERVICE_GRAPH_NODE_QUERY_ENDPOINT: http://query-node-proxy/
+    INDEXER_SERVICE_GRAPH_NODE_STATUS_ENDPOINT: http://query-node-proxy/index-node/graphql
+    # Next varaible must be changed with http://indexer-agent:8002/network
+    INDEXER_SERVICE_NETWORK_SUBGRAPH_ENDPOINT: https://gateway.testnet.thegraph.com/network
+    #INDEXER_SERVICE_VECTOR_NODE: "http://vector-node"
+    #INDEXER_SERVICE_VECTOR_ROUTER: vector8BSZxfkr62As6KZX2so4yXuex5XcpPXQ2tYZrBqpub94dAobu7
+    SKIP_EVM_VALIDATION: "true"
+    INDEXER_SERVICE_CLIENT_SIGNER_ADDRESS: 0xe1EC4339019eC9628438F8755f847e3023e4ff9c
+
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "7300"
+
+# The ingress enables internet access to this service. Use the whitelist to control the access.
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0" # Comma separated list of network that are allowed to access this service. 0.0.0.0/0 means ANY
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: service.thegraphtest.easy2stake.com # Change this hostname with your own domain
+        paths:
+          - path: /
+            servicePort: 7600
+            serviceName: indexer-service
+
+
+  podSecurityContext: {}
+
+  securityContext: {}
+
+  container:
+    ports:
+      http: 7600
+      metrics: 7300
+
+  service:
+    type: ClusterIP
+    http: 7600
+    metrics: 7300
+
+  prometheus: false
+
+  resources: {}
+
+# These are the PSQL connection settings. Must match the data defined inside azure-terraform\terraform.tfvars PSQL section.
+  postgresql:
+    password: P@SsPsQL965#r00t
+    host: graph-psql-server.postgres.database.azure.com
+    user: graphpsql@graph-psql-server
+    dbname: indexer-service
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+#####################################################
+##### END of graphprotocol-service configuration ####
+#####################################################
+
+#########################################
+### START of Prometheus configuration ###
+#########################################
+prometheus:
+  enabled: true
+  server:
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: nginx
+        nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0" # Comma separated list of network that are allowed to access this service. 0.0.0.0/0 means ANY
+      extraLabels: {}
+      hosts:
+        - prometheus.thegraphtest.easy2stake.com # Change this hostname with your own domain
+  alertmanager:
+    enabled: true
+#########################################
+#### END of Prometheus configuration ####
+#########################################
+
+########################################
+#### START of Grafana configuration ####
+########################################
+grafana:
+  enabled: true
+  plugins:
+    - grafana-kubernetes-app
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0" # Comma separated list of network that are allowed to access this service. 0.0.0.0/0 means ANY
+    labels: {}
+    path: /
+    pathType: Prefix
+    hosts:
+      - grafana.thegraphtest.easy2stake.com # Change this hostname with your own domain
+  sidecar:
+    dashboards:
+      enabled: true
+  datasources:
+   datasources.yaml:
+     apiVersion: 1
+     datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://graphprotocol-prometheus-server
+        access: proxy
+        isDefault: true
+      - name: postgres
+        type: postgres
+        # These are the PSQL connection settings. Must match the data defined inside azure-terraform\terraform.tfvars PSQL section.
+        url: graph-psql-server.postgres.database.azure.com
+        database: graph
+        user: graphpsql@graph-psql-server
+        secureJsonData:
+          password: P@SsPsQL965#r00t
+        jsonData:
+          sslmode: "disable"
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+    - name: 'default'
+      orgId: 1
+      folder: ''
+      type: file
+      disableDeletion: false
+      editable: true
+      options:
+        path: /var/lib/grafana/dashboards/default
+  dashboards:
+    default:
+      custom-dashboard:
+        file: grafana-custom/dashboards/indexing-status.json
+########################################
+##### END of Grafana configuration #####
+########################################
