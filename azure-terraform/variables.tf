@@ -137,7 +137,7 @@ variable "postgresql_dbname_indexer" {
   default = "indexer-service"
 }
 
-variable "postgresql_dbname_vector" {
+variable "postgresql_dbname_service" {
   description = "TheGraph vector database"
   default = "indexer-service"
 }
