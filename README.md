@@ -140,7 +140,14 @@ client_secret = "YOUR_AAD_APPLICATION_CLIENT_SECRET"
 tenant_id = "YOUR_AAD_TENANT_ID"
 subscription_id = "YOUR_AAD_SUBSCRIPTION_ID"
 public_ssh_key = "RSA_SSH_PUBKEY_FOR_DIRECT_NODE_ACCESS"
+```
 
+> The data above can be obtained by creating a new Service Principal in Azure Active Directory.
+Example: The output of the following command (az cli) will contain the client_id, client_secret and the tenant_id:
+`az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/<YOUR-SUBSCRIPTION-ID-HERE>"`
+Please check the documentation here: https://docs.microsoft.com/en-us/cli/azure/ad/sp?view=azure-cli-latest#az_ad_sp_create_for_rbac
+
+```sh
 # Initialize the working directory
 terraform init
 # Look for the "Terraform has been successfully initialized!" to confirm everything worked
