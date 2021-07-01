@@ -92,7 +92,7 @@ resource "helm_release" "ingress" {
 
   set {
     name  = "controller.service.loadBalancerIP"
-    value = "azurerm_public_ip.ingress_ip.ip_address"
+    value = "${azurerm_public_ip.ingress_ip.ip_address}"
   }
   set {
     name = "controller.service.annotations.\"service\\.beta\\.kubernetes\\.io/azure-load-balancer-resource-group\""
