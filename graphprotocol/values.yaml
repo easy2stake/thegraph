@@ -1,5 +1,5 @@
 ###########################  ADD THE INDEXER MNEMONIC HERE ###########################
-mnemonic: your mnemonic here
+mnemonic: <YOUR MNEMONIC HERE>
 ######################################################################################
 
 
@@ -27,7 +27,7 @@ graphprotocol-agent:
 # The env variables needed by the graph-protocol agent.
 # New variables can be added if it's needed.
   config:
-    INDEXER_AGENT_INDEXER_ADDRESS: 0x0000000000000000000000000000000000000000
+    INDEXER_AGENT_INDEXER_ADDRESS: 0x0000000000000000000000000000000000000000 # Change this
     INDEXER_AGENT_INDEX_NODE_IDS: "index_node_0"
     INDEXER_AGENT_INJECT_DAI: "true"
     INDEXER_AGENT_ETHEREUM: https://eth-rinkeby-rpc.domain.com # Change this by needs
@@ -130,7 +130,7 @@ graphprotocol-indexnode:
     node_role: index-node
     ipfs: https://ipfs.testnet.thegraph.com
     ethereum: >-
-      mainnet:http://mainnet-archive-geth-node-url.com
+      mainnet:http://mainnet-archive-geth-node-url.com  ### <CHANGE THIS>
     RUST_LOG: ERROR
     GRAPH_LOG: INFO
     STORE_CONNECTION_POOL_SIZE: "25"
@@ -219,7 +219,7 @@ graphprotocol-querynode:
     node_role: query-node
     ipfs: https://ipfs.network.thegraph.com
     ethereum: >-
-      mainnet:http://mainnet-archive-geth-node-url.com
+      mainnet:http://mainnet-archive-geth-node-url.com  ###<CHANGE THIS>###
     RUST_LOG: INFO
     STORE_CONNECTION_POOL_SIZE: "25"
     GRAPH_LOG_QUERY_TIMING: gql
@@ -306,7 +306,7 @@ graphprotocol-service:
 # The env variables needed by the graph-protocol service.
 # New variables can be added if it's needed.
   config:
-    INDEXER_SERVICE_INDEXER_ADDRESS: 0x0000000000000000000000000000000000000000
+    INDEXER_SERVICE_INDEXER_ADDRESS: 0x0000000000000000000000000000000000000000 # Change this
     INDEXER_SERVICE_PORT: "7600"
     INDEXER_SERVICE_ETHEREUM_NETWORK: rinkeby
     INDEXER_SERVICE_ETHEREUM: https://eth-rinkeby-rpc.domain.com # Change this by needs
