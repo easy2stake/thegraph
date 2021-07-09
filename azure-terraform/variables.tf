@@ -127,17 +127,17 @@ variable "postgresql_storage" {
   default = "262144"
 }
 
-variable "postgresql_dbname_query" {
+variable "postgresql_dbname_indexer" {
   description = "TheGraph Query"
 	default = "graph"
 }
 
-variable "postgresql_dbname_indexer" {
+variable "postgresql_dbname_service" {
   description = "TheGraph indexer database"
   default = "indexer-service"
 }
 
-variable "postgresql_dbname_service" {
-  description = "TheGraph vector database"
-  default = "indexer-service"
-}
+#variable "postgresql_dbname_vector" {
+#  description = "TheGraph vector database"
+#  default = "indexer-service"
+#}
