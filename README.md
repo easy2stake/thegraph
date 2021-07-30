@@ -256,19 +256,33 @@ thegraph-deployment-prometheus-server-585594ddd-x262r          2/2     Running  
 # Get the public IP of the ingress controller and add them to your DNS Zone and/or your hosts file
 kubectl get ingress
 NAME                         CLASS    HOSTS                                    ADDRESS         PORTS   AGE
-indexer-agent                <none>   agent.thegraphtest.easy2stake.com        20.93.201.127   80      50m
+indexer-agent                <none>   agent.thegraphtest.easy2stake.com        20.93.201.127   80      50m <- only if ingress is enabled. Disabled by default
 indexer-service              <none>   service.thegraphtest.easy2stake.com      20.93.201.127   80      50m
 new-test-grafana             <none>   grafana.thegraphtest.easy2stake.com      20.93.201.127   80      50m
-new-test-prometheus-server   <none>   prometheus.thegraphtest.easy2stake.com   20.93.201.127   80      50m
+new-test-prometheus-server   <none>   prometheus.thegraphtest.easy2stake.com   20.93.201.127   80      50m <- only if ingress is enabled. Disabled by default.
 ```
 
 Access the ingress endpoints in your browser and confirm it's working.
 
-#### Credentials:
+#### Credentials for Grafana:
 **Grafana user**: admin
 **Grafana password**: `kubectl get secret --namespace default thegraph-deployment-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo`
 
-**Prometheus:** No user and password defined. Use the whitelist inside values.yaml to control the access.
+#### Access Prometheus & Indexer Agent
+**Prometheus:** No user and password defined. Use the whitelist inside values.yaml to control the access in case you activated the ingress for it, or access prometheus using PORT Forwarding:
+kubectl get pods
+kubectl port-forward pods/prometheus-server-<pod_id> 9090:9090
+
+Browse: http://127.0.0.1:9090/
+
+**Indexer Agent access**: Use the whitelist inside values.yaml to control the access in case you activated the ingress for it, or access Indexer Agent using PORT Forwarding:
+kubectl get pods
+kubectl port-forward pods/indexer-agent-<pod_id> 8000:8000
+
+Browse: http://127.0.0.1:8000/
+
+#### Security:
+We strongly recommend that you enable HTTPS for all your services published via INGRESS controller. Once you have DNS records created for mentioned hosts (see above), you can use Cert-Manager (https://cert-manager.io/docs/) along with Let's Encrypt Certficate Authority (https://letsencrypt.org)
 
 ### 4. Troubleshooting
 Work in progress.

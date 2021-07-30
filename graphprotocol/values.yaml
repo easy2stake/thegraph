@@ -72,16 +72,16 @@ graphprotocol-agent:
 
 # The ingress enables internet access to this service. Use the whitelist to control the access.
   ingress:
-    enabled: true
+    enabled: false
     annotations:
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0" # Comma separated list of network that are allowed to access this service. 0.0.0.0/0 means ANY
-    hosts:
-      - host: agent.thegraphtest.easy2stake.com # Change this hostname with your own domain
-        paths:
-          - path: /
-            serviceName: indexer-agent
-            servicePort: 8000
+    #   kubernetes.io/ingress.class: nginx
+    #   nginx.ingress.kubernetes.io/whitelist-source-range: "5.5.5.5/32" # Comma separated list of network that are allowed to access this service. 0.0.0.0/0 means ANY
+    # hosts:
+    #   - host: agent.thegraphtest.easy2stake.com # Change this hostname with your own domain
+    #     paths:
+    #       - path: /
+    #         serviceName: indexer-agent
+    #         servicePort: 8000
 
 # These are the PSQL connection settings. Must match the data defined inside azure-terraform\terraform.tfvars PSQL section.
   postgresql:
@@ -390,13 +390,13 @@ prometheus:
   enabled: true
   server:
     ingress:
-      enabled: true
-      annotations:
-        kubernetes.io/ingress.class: nginx
-        nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0" # Comma separated list of network that are allowed to access this service. 0.0.0.0/0 means ANY
-      extraLabels: {}
-      hosts:
-        - prometheus.thegraphtest.easy2stake.com # Change this hostname with your own domain
+      enabled: false # For management tasks, you can enable access to Prometheus via ingress controller. We recommend to use ingresses with https enabled & ACLs or via kubectl port forwarding as mentioned in README. 
+      # annotations:
+      #   kubernetes.io/ingress.class: nginx
+      #   nginx.ingress.kubernetes.io/whitelist-source-range: "5.5.5.5/32" # Comma separated list of networks that are allowed to access this service. 0.0.0.0/0 means ANY. DON'T expose your PROMETHEUS instance to the internet, it represents a big security risk!
+      # extraLabels: {}
+      # hosts:
+      #   - prometheus.thegraphtest.easy2stake.com # Change this hostname with your own domain
   alertmanager:
     enabled: true
 #########################################
@@ -414,7 +414,7 @@ grafana:
     enabled: true
     annotations:
       kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0" # Comma separated list of network that are allowed to access this service. 0.0.0.0/0 means ANY
+      nginx.ingress.kubernetes.io/whitelist-source-range: "5.5.5.5/32" # Comma separated list of networks that are allowed to access this service.  We recommend to use ingresses with https enabled & ACLs for grafana access. 
     labels: {}
     path: /
     pathType: Prefix
