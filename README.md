@@ -2,6 +2,8 @@
 
 ### Automated deployment using Terraform, Kubernetes and Helm
 
+**Video Guide**: https://www.youtube.com/watch?v=ORr3yWBSn90
+
 ### Introduction
 This is a Graph Protocol automated deployment using the following tools:
 * Terraform - used to bring up the necessary cloud infrastructure
