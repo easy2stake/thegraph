@@ -2,7 +2,7 @@
 
 ### Infrastructure deployment in Azure Cloud
 
-After installing all the preerquisites specified on [STEP 1](../), follow the next steps in order to deploy on Azure Cloud.
+After installing all the preerquisites specified on [STEP 1](https://github.com/easy2stake/thegraph), follow the next steps in order to deploy on Azure Cloud.
 
 ### 1. Install AWS CLI
 
