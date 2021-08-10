@@ -114,9 +114,9 @@ version.BuildInfo{Version:"v3.6.0", GitCommit:"7f2df6467771a75f5646b7f12afb40859
 
 You can find the deployment instructions, depending on you chosen cloud provider, here:
 
---- [DEPLOY ON AZURE](./azure-terraform/)
---- [DEPLOY ON AWS](./aws-terraform)
---- [DEPLOY ON Google Cloud](./google-terraform)
+- [DEPLOY ON AZURE](./azure-terraform/)
+- [DEPLOY ON AWS](./aws-terraform)
+- [DEPLOY ON Google Cloud](./google-terraform)
 
 ------------
 
