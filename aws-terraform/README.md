@@ -1,6 +1,6 @@
 # TheGraph -  Public Cloud Abstraction
 
-### Infrastructure deployment in Azure Cloud
+### Infrastructure deployment in AWS Cloud
 
 After installing all the preerquisites specified on [STEP 1](https://github.com/easy2stake/thegraph), follow the next steps in order to deploy on Azure Cloud.
 
