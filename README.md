@@ -15,7 +15,7 @@ This is a Graph Protocol automated deployment using the following tools:
 | Public Cloud | Supported |
 | ------------ | ------------ |
 | Azure Cloud | YES |
-| AWS | Work In Progress |
+| AWS | YES |
 | GKE | Work In Progress |
 
 The aim of the project is to provide a fully automated method of deploying and managing TheGraph services while keeping the much needed modularity that the protocol needs.
@@ -108,72 +108,21 @@ mv linux-amd64/helm /usr/local/bin/helm
 helm version
 version.BuildInfo{Version:"v3.6.0", GitCommit:"7f2df6467771a75f5646b7f12afb408590ed1755", GitTreeState:"clean", GoVersion:"go1.16.3"}
 ```
-
-**Install az-cli** (optional)
-```sh
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-
-# Confirm it's working:.
-az version
-{
-  "azure-cli": "2.25.0",
-  "azure-cli-core": "2.25.0",
-  "azure-cli-telemetry": "1.0.6",
-  "extensions": {}
-}
-
-```
-
 ------------
-
 
 ### 2. Deploy your cloud infra using terraform
 
+You can find the deployment instructions, depending on you chosen cloud provider, here:
 
-```sh
-# Clone the repo and enter the terraform dir
-git clone https://github.com/easy2stake/thegraph
-cd thegraph/azure-terraform
-
-# Edit the azure-terraform/terraform.tfvars file and add your azure credentials.
-# YOU NEED AN AZURE ACCOUNT IN ORDER TO PROCEED
-client_id = "YOUR_AAD_APPLICATION_CLIENT_ID"
-client_secret = "YOUR_AAD_APPLICATION_CLIENT_SECRET"
-tenant_id = "YOUR_AAD_TENANT_ID"
-subscription_id = "YOUR_AAD_SUBSCRIPTION_ID"
-public_ssh_key = "RSA_SSH_PUBKEY_FOR_DIRECT_NODE_ACCESS"
-```
-
-> The data above can be obtained by creating a new Service Principal in Azure Active Directory.
-Example: The output of the following command (az cli) will contain the client_id, client_secret and the tenant_id:
-`az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/<YOUR-SUBSCRIPTION-ID-HERE>"`
-Please check the documentation here: https://docs.microsoft.com/en-us/cli/azure/ad/sp?view=azure-cli-latest#az_ad_sp_create_for_rbac
-
-```sh
-# Initialize the working directory
-terraform init
-# Look for the "Terraform has been successfully initialized!" to confirm everything worked
-
-# Preview the changes that Terraform plans to make to your infrastructure
-terraform plan  -out=myplan.zip
-# The output will be big, listing all the resources pending to be deployed on the public cloud
-
-# Execute the actions proposed in a Terraform plan.
-terraform apply "myplan.zip"
-# Run and wait. It needs time to create the kubernetes cluster, the DB and all other necessary resources.
-```
+--- [DEPLOY ON AZURE](./azure-terraform/)
+--- [DEPLOY ON AWS](./aws-terraform)
+--- [DEPLOY ON Google Cloud](./google-terraform)
 
 ------------
 
-
 ### 3. Deploy TheGraph containers using helm
-**Go to azure CLI and get K8S credentials**
-This step is necessary in order to get access from the local kubectl shell to Azure K8S Cluster deployed with Terraform in the previous step.
-```sh
-mkdir -p $HOME/.kube
-az aks get-credentials --resource-group RG-graphprotocol-aks --name graph-aks --file -
-```
-**Create and paste the output of the above command to: $HOME/.kube/config file**
+
+After deploying with terraform, the following steps are the same, independend of your chosen cloud provider.
 
 #### 3.A. The short version (commands used, in order):
 ```sh
