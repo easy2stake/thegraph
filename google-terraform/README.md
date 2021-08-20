@@ -29,7 +29,7 @@ gsutil 4.66
 gcloud init --console-only
 # Now follow all the instructions prompted on screen in order to login to your google cloud subscription.
 ```
-** PAY ATTENTION TO THIS:**
+**PAY ATTENTION TO THIS:**
 On the step above, when initialising for the first time, you have to create a new cloud project. The console message will be similar to this one:
 ```sh
 Pick cloud project to use:
