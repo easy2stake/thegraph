@@ -16,7 +16,7 @@ This is a Graph Protocol automated deployment using the following tools:
 | ------------ | ------------ |
 | Azure Cloud | YES |
 | AWS | YES |
-| GKE | Work In Progress |
+| GKE | YES |
 
 The aim of the project is to provide a fully automated method of deploying and managing TheGraph services while keeping the much needed modularity that the protocol needs.
 
